@@ -25,7 +25,20 @@ export default {
     return {
       form: {
         inputMsg: 'What is exposure?',
-        list: [],
+        list: [
+          {
+          "date": "2022/09/30 21:19:07",
+          "text": { "text": "Hi Could i ask you some finance question?" },
+          "mine": false,
+          "name": "Client A"
+        },
+        {
+          "date": "2022/09/30 21:19:08",
+          "text": { "text": "It's my pleasure, please." },
+          "mine": true,
+          "name": "AI bot"
+        },
+      ],
         config: {
           img: '../image/cover.png',
           name: 'Finance auto replay chat',
