@@ -1,4 +1,4 @@
-package com.ss.crdt.uiservice;
+package com.ss.crdt;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
