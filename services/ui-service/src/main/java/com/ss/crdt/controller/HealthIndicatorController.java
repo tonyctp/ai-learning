@@ -9,11 +9,11 @@ import org.springframework.web.bind.annotation.ResponseBody;
 
 
 @Controller
-@RequestMapping("/hackathon")
+@RequestMapping("/hackathon/crdt")
 public class HealthIndicatorController {
 
 	@ResponseBody
-	@RequestMapping("/crdt/hello")
+	@RequestMapping("/hello")
 	public String index() {
 		return "Hello hackathon!";
 	}
