@@ -19,20 +19,23 @@
 // import HelloWorld from "./components/HelloWorld.vue";
 // import TodoItem from "./components/ToDoItem.vue";
 
+import axios from 'axios';
+import { response } from 'express';
+
 export default {
   name: "App",
   data() {
     return {
       form: {
         inputMsg: 'What is exposure?',
-        list: [     
-        {
-        "date": (new Date()).toLocaleTimeString(),
-        "text": { "text": 'This auto replay bot.' },
-        "mine": false,
-        "name": "AI Bot"
-      }
-           ],
+        list: [
+          {
+            "date": (new Date()).toLocaleTimeString(),
+            "text": { "text": 'This auto replay bot.' },
+            "mine": false,
+            "name": "AI Bot"
+          }
+        ],
         config: {
           img: '../image/cover.png',
           name: 'Finance auto replay chat',
@@ -48,28 +51,28 @@ export default {
           }]
         },
         answerMock: [
-          
-        {
-          key: ['hi'],
-          answer: 'Hi, what could i help you.'
-        },
-        
-        {
-          key: ['question'],
-          answer: 'It\'s my pleasure, please.'
-        },
-        {
-          key: ['exposure'],
-          answer: 'Financial exposure is the amount an investor stands to lose in an investment should the investment fail.'
-        },
-        {
-          key: ['exchange', 'dollar', 'today'],
-          answer: 'It is 1.02 EUR to 1 USD'
-        },
-        {
-          key: ['exchange', 'dollar', 'yesterday'],
-          answer: 'It is 1.03 EUR to 1 USD.'
-        }
+
+          {
+            key: ['hi'],
+            answer: 'Hi, what could i help you.'
+          },
+
+          {
+            key: ['question'],
+            answer: 'It\'s my pleasure, please.'
+          },
+          {
+            key: ['exposure'],
+            answer: 'Financial exposure is the amount an investor stands to lose in an investment should the investment fail.'
+          },
+          {
+            key: ['exchange', 'dollar', 'today'],
+            answer: 'It is 1.02 EUR to 1 USD'
+          },
+          {
+            key: ['exchange', 'dollar', 'yesterday'],
+            answer: 'It is 1.03 EUR to 1 USD.'
+          }
         ],
         toolConfig: {
           active: 'win00',
@@ -119,6 +122,14 @@ export default {
         return;
       var obj = this.getChatMessage(false, msg);
       this.form.list.push(obj);
+      // get response
+      axios.get('http://localhost:10001/hackathon/crdt/chat')
+        .then(response => {
+          var tags = response.data.tags;
+          var answer = getMatchAnswer(tags);
+          this.form.list.push(this.getChatMessage(true, answer));
+        })
+        .catch(err => console.log(err));
     },
     getChatMessage(isbot, msg) {
       var dat = (new Date()).toLocaleTimeString();
@@ -129,6 +140,19 @@ export default {
         "name": "Client A"
       }
       return msgObj;
+    },
+    getMatchAnswer(tags) { // based on tags to match answer
+      this.form.answerMock.forEach(item => {
+        var flag = 0;
+        for (var i = 0; i < item.key.length; i++) {
+          if (tags.includes(item.key[i]))
+            flag++;
+        }
+        if (flag == item.key.length)
+          return item.answer;
+        else
+          "Please give me sometime once i get the result will let you know.";
+      });
     }
   },
   components: {
