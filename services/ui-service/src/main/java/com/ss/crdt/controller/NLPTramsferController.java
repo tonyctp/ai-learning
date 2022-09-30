@@ -1,5 +1,6 @@
 package com.ss.crdt.controller;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -19,6 +20,7 @@ import java.util.Map;
 public class NLPTramsferController {
 
 	@PostMapping(value = "/chat")
+	@CrossOrigin
 	public ChatClientBean getToken(HttpServletRequest request, @RequestBody ChatClientBean chat) {
 		String content = chat.getContent();
 		List<String> tagList = NLPTransferService.getOriginalText(content);

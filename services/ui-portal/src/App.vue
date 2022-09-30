@@ -4,7 +4,7 @@
     <!-- <img alt="Vue logo" src="./assets/logo.png" /> -->
     <!-- <HelloWorld msg="Auto replay chat" /> -->
     <JwChat-index placeholder='Please input' :taleList="form.list" @enter="bindEnter" v-model="form.inputMsg"
-      :showRightBox='true' scrollType="noscroll" :config="form.config" :toolConfig="form.toolConfig " />
+      :showRightBox='true' scrollType="noscroll" :config="form.config" :toolConfig="form.toolConfig " height="800"/>
     <!-- <ol>
       <todo-item
         v-for="item in list"
@@ -20,18 +20,17 @@
 // import TodoItem from "./components/ToDoItem.vue";
 
 import axios from 'axios';
-import { response } from 'express';
 
 export default {
   name: "App",
   data() {
     return {
       form: {
-        inputMsg: 'What is exposure?',
+        inputMsg: 'hi',
         list: [
           {
             "date": (new Date()).toLocaleTimeString(),
-            "text": { "text": 'This auto replay bot.' },
+            "text": { "text": 'This is auto replay bot.' },
             "mine": false,
             "name": "AI Bot"
           }
@@ -122,37 +121,58 @@ export default {
         return;
       var obj = this.getChatMessage(false, msg);
       this.form.list.push(obj);
+      console.log(1)
       // get response
-      axios.get('http://localhost:10001/hackathon/crdt/chat')
+      var data = {
+        "id": "document id",
+        "content": msg,
+        "extras": "",
+        "resourceKey": "",
+        "timestamp": 0,
+        "title": "document title",
+        "userId": "",
+        "tags": []
+      };
+      console.log(data);
+      axios({
+        method: 'post',
+        url: 'http://localhost:10001/hackathon/crdt/chat',
+        data,
+        // headers:{"Content-Type": 'application/x-www-form-urlencoded'}
+      })
         .then(response => {
           var tags = response.data.tags;
-          var answer = getMatchAnswer(tags);
+          console.log(tags)
+          var answer = this.getMatchAnswer(tags);
           this.form.list.push(this.getChatMessage(true, answer));
         })
         .catch(err => console.log(err));
     },
     getChatMessage(isbot, msg) {
       var dat = (new Date()).toLocaleTimeString();
+      var name = "Client A"
+      if (isbot)
+        name = "AI Bot"
       const msgObj = {
         "date": dat,
         "text": { "text": msg },
-        "mine": true,
-        "name": "Client A"
+        "mine": !isbot,
+        "name": name
       }
       return msgObj;
     },
     getMatchAnswer(tags) { // based on tags to match answer
-      this.form.answerMock.forEach(item => {
+      for (var j = 0; j < this.form.answerMock.length; j++) {
         var flag = 0;
+        var item = this.form.answerMock[j];
         for (var i = 0; i < item.key.length; i++) {
           if (tags.includes(item.key[i]))
             flag++;
         }
         if (flag == item.key.length)
-          return item.answer;
-        else
-          "Please give me sometime once i get the result will let you know.";
-      });
+          return item.answer;          
+      }
+      return "I could not catch what you want,Please give me sometime once i get the result will let you know.";
     }
   },
   components: {
